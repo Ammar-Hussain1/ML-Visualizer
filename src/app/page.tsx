@@ -8,12 +8,16 @@ import { ExplanationPanel } from "@/components/ExplanationPanel";
 import { NeuralNetworkVisualization } from "@/components/NeuralNetworkVisualization";
 import { KNNVisualization } from "@/components/KNNVisualization";
 import { DecisionTreeVisualization } from "@/components/DecisionTreeVisualization";
+import { KMeansVisualization } from "@/components/KMeansVisualization";
+import { PCAVisualization } from "@/components/PCAVisualization";
 import { useVisualizerStore } from "@/core/store";
 import { LinearRegression } from "@/core/algorithms/linear-regression";
 import { LogisticRegression } from "@/core/algorithms/logistic-regression";
 import { NeuralNetwork } from "@/core/algorithms/neural-network";
 import { KNearestNeighbors } from "@/core/algorithms/knn";
 import { DecisionTree } from "@/core/algorithms/decision-tree";
+import { KMeans } from "@/core/algorithms/kmeans";
+import { PCA } from "@/core/algorithms/pca";
 import { TrainingEngine } from "@/core/training-engine";
 import { VisualizationEngine } from "@/core/visualization-engine";
 import { ChartConfig } from "@/core/visualization-engine";
@@ -56,7 +60,7 @@ function generateClassificationData(
 export default function Home() {
   const store = useVisualizerStore();
   const [chart, setChart] = useState<ChartConfig | undefined>();
-  const [currentVisualization, setCurrentVisualization] = useState<"chart" | "nn" | "knn" | "dt">("chart");
+  const [currentVisualization, setCurrentVisualization] = useState<"chart" | "nn" | "knn" | "dt" | "kmeans" | "pca">("chart");
   const [trainData, setTrainData] = useState<{ features: Matrix; targets: Vector } | undefined>();
   const [isTraining, setIsTraining] = useState(false);
 
@@ -141,6 +145,36 @@ export default function Home() {
         );
         setTrainData({ features, targets });
         setCurrentVisualization("dt");
+      } else if (algorithmName === "K-Means") {
+        // Generate clustering data (mix of 3 clusters)
+        const data = generateClassificationData(
+          (config.dataSize as number) || 100,
+          3
+        );
+        features = data.features;
+        targets = data.targets;
+
+        algorithm = new KMeans(3, {
+          learningRate: 0,
+          maxIterations: (config.maxIterations as number) || 50,
+        });
+        setTrainData({ features, targets });
+        setCurrentVisualization("kmeans");
+      } else if (algorithmName === "PCA") {
+        // Use the same data as K-Means for PCA demonstration
+        const data = generateClassificationData(
+          (config.dataSize as number) || 100,
+          3
+        );
+        features = data.features;
+        targets = data.targets;
+
+        algorithm = new PCA(2, {
+          learningRate: 0,
+          maxIterations: 1,
+        });
+        setTrainData({ features, targets });
+        setCurrentVisualization("pca");
       } else if (algorithmName === "Neural Network") {
         // Generate multi-class classification data
         const data = generateClassificationData(
@@ -201,7 +235,7 @@ export default function Home() {
       <AlgorithmLayout
         controlPanel={
           <ControlPanel
-            algorithms={["Linear Regression", "Logistic Regression", "Neural Network", "KNN", "Decision Tree"]}
+            algorithms={["Linear Regression", "Logistic Regression", "Neural Network", "KNN", "Decision Tree", "K-Means", "PCA"]}
             onTrain={handleTrain}
           />
         }
@@ -219,6 +253,16 @@ export default function Home() {
           ) : currentVisualization === "dt" ? (
             <DecisionTreeVisualization
               algorithm={store.currentAlgorithm as unknown as DecisionTree}
+              trainData={trainData}
+            />
+          ) : currentVisualization === "kmeans" ? (
+            <KMeansVisualization
+              algorithm={store.currentAlgorithm as unknown as KMeans}
+              trainData={trainData}
+            />
+          ) : currentVisualization === "pca" ? (
+            <PCAVisualization
+              algorithm={store.currentAlgorithm as unknown as PCA}
               trainData={trainData}
             />
           ) : (

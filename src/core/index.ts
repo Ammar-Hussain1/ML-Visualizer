@@ -23,6 +23,8 @@ export { LogisticRegression } from "./algorithms/logistic-regression";
 export { NeuralNetwork } from "./algorithms/neural-network";
 export { KNearestNeighbors } from "./algorithms/knn";
 export { DecisionTree } from "./algorithms/decision-tree";
+export { KMeans } from "./algorithms/kmeans";
+export { PCA } from "./algorithms/pca";
 
 // Distance metrics
 export * from "./math/distance-metrics";
