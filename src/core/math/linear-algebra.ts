@@ -78,6 +78,13 @@ export const LinearAlgebra = {
   },
 
   /**
+   * Outer product: creates a matrix from two vectors as u⊗v
+   */
+  outerProduct(u: Vector, v: Vector): Matrix {
+    return u.map((ui) => v.map((vj) => ui * vj));
+  },
+
+  /**
    * Element-wise multiplication (Hadamard product).
    */
   elementwiseMultiply(m1: Matrix | Vector, m2: Matrix | Vector): Matrix | Vector {

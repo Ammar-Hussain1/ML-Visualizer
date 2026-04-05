@@ -16,3 +16,8 @@ export * from "./math/activation-loss";
 
 // State management
 export * from "./store";
+
+// Algorithms
+export { LinearRegression } from "./algorithms/linear-regression";
+export { LogisticRegression } from "./algorithms/logistic-regression";
+export { NeuralNetwork } from "./algorithms/neural-network";
